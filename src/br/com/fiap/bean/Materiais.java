@@ -45,4 +45,8 @@ public class Materiais {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    public void cadastrarPreset(String nome) {
+        System.out.println("Material associado ao preset: " + nome);
+    }
 }

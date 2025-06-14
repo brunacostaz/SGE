@@ -76,6 +76,13 @@ public class Funcionario {
         this.idLab = idLab;
     }
 
+    public long retirarMaterials() {
+        return System.currentTimeMillis();
+    }
+
+    public long reporMateriais() {
+        return System.currentTimeMillis();
+    }
 
 
 }

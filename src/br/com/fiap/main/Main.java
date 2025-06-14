@@ -1,27 +1,173 @@
 package br.com.fiap.main;
 
-import br.com.fiap.bean.AreasLab;
-import br.com.fiap.bean.Laboratorio;
-import br.com.fiap.bean.Materiais;
+import br.com.fiap.bean.*;
+import javax.swing.*;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
+        // Inicialização dos objetos
+        Funcionario admin = new Administrador(1, "Admin", "admin@lab.com", 12345L, "Administrador", 1, 1);
+        Funcionario comum = new Funcionario(2, "Funcionário", "func@lab.com", 98765L, "Comum", 2, 1);
 
-        // === ÁREAS ===
-        AreasLab area1 = new AreasLab(1, "Coleta", "Responsável pela coleta de amostras de sangue e urina.");
-        AreasLab area2 = new AreasLab(2, "Análise Clínica", "Realiza exames laboratoriais de rotina.");
-        AreasLab area3 = new AreasLab(3, "Triagem", "Área de recepção e pré-atendimento dos pacientes.");
+        Materiais luva = new Materiais(1, "Luvas Cirúrgicas", "QR001", "Luvas estéreis");
+        Materiais mascara = new Materiais(2, "Máscara N95", "QR002", "Máscara de proteção");
+        Materiais dipirona = new Materiais(3, "Dipirona", "QR003", "Analgésico e antitérmico");
 
-        // === LABORATÓRIOS ===
-        Laboratorio lab1 = new Laboratorio(1, "Dasa Unidade Paulista", "Rua da Saúde", "Paulista", "123", 01311000, "São Paulo");
-        Laboratorio lab2 = new Laboratorio(2, "Dasa Unidade Vila Olímpia", "Av. dos Exames", "Vila Olímpia", "456", 04547000, "São Paulo");
+        Estoque estoqueLuva = new Estoque(1, "Luvas Cirúrgicas", 1, 15, 101);
+        Estoque estoqueMascara = new Estoque(2, "Máscara N95", 1, 12, 102);
+        Estoque estoqueDipirona = new Estoque(3, "Dipirona", 1, 50, 103);
 
-        // === MATERIAIS ===
-        Materiais mat1 = new Materiais(1, "Seringa 5ml", "QRCOD001", "Usada para coleta de sangue.");
-        Materiais mat2 = new Materiais(2, "Algodão", "QRCOD002", "Algodão estéril para curativos.");
-        Materiais mat3 = new Materiais(3, "Álcool 70%", "QRCOD003", "Álcool líquido para assepsia.");
-        Materiais mat4 = new Materiais(4, "Tubo de ensaio", "QRCOD004", "Utilizado para armazenar amostras.");
-        Materiais mat5 = new Materiais(5, "Luvas descartáveis", "QRCOD005", "Luvas de procedimento não cirúrgico.");
+        // Sistema de Login
+        Funcionario usuarioLogado = null;
+        while (usuarioLogado == null) {
+            try {
+                long cpf = Long.parseLong(JOptionPane.showInputDialog(
+                        "SISTEMA DE ESTOQUE\n\n" +
+                                "CPFs para teste:\n" +
+                                "Admin: 12345\n" +
+                                "Comum: 98765\n\n" +
+                                "Digite seu CPF:"));
 
+                if (cpf == admin.getCpf()) {
+                    usuarioLogado = admin;
+                } else if (cpf == comum.getCpf()) {
+                    usuarioLogado = comum;
+                } else {
+                    throw new Exception("CPF inválido!");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        }
+
+        // Menu Principal
+        boolean executando = true;
+        while (executando) {
+            String menu = "MENU PRINCIPAL\n\n" +
+                    "1. Retirar material\n" +
+                    "2. Repor material\n";
+
+            if (usuarioLogado.getTipoConta().equals("Administrador")) {
+                menu += "3. Cadastrar preset\n" +
+                        "4. Visualizar dashboard\n" +
+                        "5. Sair";
+            } else {
+                menu += "3. Sair";
+            }
+
+            String opcao = JOptionPane.showInputDialog(menu);
+
+            switch (opcao) {
+                case "1": // Retirar material
+                    String lista = "Materiais disponíveis:\n" +
+                            "1. " + estoqueLuva.getNome() + " (" + estoqueLuva.consultarEstoque() + ")\n" +
+                            "2. " + estoqueMascara.getNome() + " (" + estoqueMascara.consultarEstoque() + ")\n" +
+                            "3. " + estoqueDipirona.getNome() + " (" + estoqueDipirona.consultarEstoque() + ")";
+
+                    try {
+                        int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
+                        int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
+
+                        boolean sucesso = false;
+                        if (item == 1) {
+                            if (estoqueLuva.getQuantidadeAtual() >= qnt) {
+                                estoqueLuva.diminuirEstoque(qnt);
+                                sucesso = true;
+                                estoqueLuva.alertaEstoqueBaixo();
+                            }
+                        }
+                        else if (item == 2) {
+                            if (estoqueMascara.getQuantidadeAtual() >= qnt) {
+                                estoqueMascara.diminuirEstoque(qnt);
+                                sucesso = true;
+                                estoqueMascara.alertaEstoqueBaixo();
+                            }
+                        }
+                        else if (item == 3) {
+                            if (estoqueDipirona.getQuantidadeAtual() >= qnt) {
+                                estoqueDipirona.diminuirEstoque(qnt);
+                                sucesso = true;
+                                estoqueDipirona.alertaEstoqueBaixo();
+                            }
+                        }
+
+                        if (sucesso) {
+                            long idMovimentacao = usuarioLogado.retirarMaterials();
+                            MovimentacaoEstoque mov = new MovimentacaoEstoque(
+                                    idMovimentacao, "SAÍDA", LocalDate.now(),
+                                    usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
+                            );
+                            mov.exibirEvento();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Quantidade indisponível!");
+                        }
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+                    }
+                    break;
+
+                case "2": // Repor material
+                    lista = "Materiais disponíveis:\n" +
+                            "1. " + estoqueLuva.getNome() + " (" + estoqueLuva.consultarEstoque() + ")\n" +
+                            "2. " + estoqueMascara.getNome() + " (" + estoqueMascara.consultarEstoque() + ")\n" +
+                            "3. " + estoqueDipirona.getNome() + " (" + estoqueDipirona.consultarEstoque() + ")";
+
+                    try {
+                        int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
+                        int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
+
+                        if (item == 1) {
+                            estoqueLuva.aumentarEstoque(qnt);
+                        } else if (item == 2) {
+                            estoqueMascara.aumentarEstoque(qnt);
+                        } else if (item == 3) {
+                            estoqueDipirona.aumentarEstoque(qnt);
+                        }
+
+                        long idMovimentacao = usuarioLogado.reporMateriais();
+                        MovimentacaoEstoque mov = new MovimentacaoEstoque(
+                                idMovimentacao, "ENTRADA", LocalDate.now(),
+                                usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
+                        );
+                        mov.exibirEvento();
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+                    }
+                    break;
+
+                case "3":
+                    if (usuarioLogado.getTipoConta().equals("Administrador")) {
+                        Administrador adm = (Administrador) usuarioLogado;
+                        JOptionPane.showMessageDialog(null, adm.cadastrarPreset());
+                    } else {
+                        executando = false;
+                    }
+                    break;
+
+                case "4": // Dashboard (admin)
+                    if (usuarioLogado.getTipoConta().equals("Administrador")) {
+                        StringBuilder dashboard = new StringBuilder();
+                        dashboard.append("📊 DASHBOARD 📊\n\n");
+
+                        dashboard.append("Estoque baixo:\n");
+                        if (estoqueLuva.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueLuva.getNome()).append("\n");
+                        if (estoqueMascara.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueMascara.getNome()).append("\n");
+                        if (estoqueDipirona.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueDipirona.getNome()).append("\n");
+
+                        dashboard.append("\nTotal de itens: 3");
+                        JOptionPane.showMessageDialog(null, dashboard.toString());
+                    }
+                    break;
+
+                case "5": // Sair (admin)
+                    executando = false;
+                    break;
+
+                default:
+                    JOptionPane.showMessageDialog(null, "Opção inválida!");
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Sistema encerrado!");
     }
 }

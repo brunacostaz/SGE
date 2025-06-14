@@ -9,50 +9,29 @@ public class Administrador extends Funcionario {
         super(idFuncionario, nome, email, cpf, tipoConta, idArea, idLab);
     }
 
-    public void cadastrarPreset() {
+    public String cadastrarPreset() {
         try {
-
-            long idPreset = Long.parseLong(JOptionPane.showInputDialog("ID do Preset:"));
-            String nome = JOptionPane.showInputDialog("Nome do Preset:");
-            String descricao = JOptionPane.showInputDialog("Descrição do Preset:");
-
-            LocalDate dataCriacao = LocalDate.now();
-            LocalDate ultimaAtualizacao = LocalDate.now();
-
-            Presets preset = new Presets(idPreset, nome, descricao, this.getNome(), dataCriacao, ultimaAtualizacao);
-            preset.salvar();
-
-            boolean continuar = true;
-            while (continuar) {
-
-                String listaMateriais =
-                        "📦 Materiais Disponíveis:\n" +
-                                "1 - Luvas Cirúrgicas\n" +
-                                "2 - Máscara N95\n" +
-                                "3 - Dipirona\n" +
-                                "4 - Álcool 70%\n" +
-                                "5 - Adrenalina";
-
-                JOptionPane.showMessageDialog(null, listaMateriais);
-
-                // Coleta dados do material para o preset
-                long idMaterial = Long.parseLong(JOptionPane.showInputDialog("Digite o ID do Material que deseja adicionar:"));
-                int quantidade = Integer.parseInt(JOptionPane.showInputDialog("Digite a quantidade para este material:"));
-
-                // Cria o PresetMaterial
-                PresetsMateriais pm = new PresetsMateriais(idMaterial, idPreset, quantidade);
-                pm.salvar();
-
-                int opcao = JOptionPane.showConfirmDialog(null, "Deseja adicionar outro material?", "Continuar?", JOptionPane.YES_NO_OPTION);
-                if (opcao != JOptionPane.YES_OPTION) {
-                    continuar = false;
-                }
+            String nomePreset = JOptionPane.showInputDialog("Nome do Preset:");
+            if (nomePreset == null || nomePreset.trim().isEmpty()) {
+                return "Cadastro cancelado!";
             }
 
-            JOptionPane.showMessageDialog(null, "✅ Preset cadastrado com sucesso!");
+            String descricao = JOptionPane.showInputDialog("Descrição do Preset:");
+
+            Presets novoPreset = new Presets(
+                    System.currentTimeMillis(),
+                    nomePreset,
+                    descricao,
+                    this.getNome(),
+                    LocalDate.now(),
+                    LocalDate.now()
+            );
+
+            novoPreset.salvar();
+            return "✅ Preset '" + nomePreset + "' cadastrado com sucesso!";
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "❌ Erro inesperado: " + e.getMessage());
+            return "❌ Erro ao cadastrar preset: " + e.getMessage();
         }
     }
 }

@@ -10,8 +10,9 @@ public class Estoque {
     private int quantidadeAtual;
     private long idLote;
 
-    public Estoque(long idItem, long idLaboratorio, int quantidadeAtual, long idLote) {
+    public Estoque(long idItem, String nome, long idLaboratorio, int quantidadeAtual, long idLote) {
         this.idItem = idItem;
+        this.nome = nome;
         this.idLaboratorio = idLaboratorio;
         this.quantidadeAtual = quantidadeAtual;
         this.idLote = idLote;
@@ -59,8 +60,12 @@ public class Estoque {
 
     public void alertaEstoqueBaixo() {
         if (this.quantidadeAtual <= 10) {
-            String message = String.format("%s está com %d unidades. Favor providenciar compras com o fornecedor!", this.nome, this.quantidadeAtual);
-            JOptionPane.showMessageDialog(null, message, "ALERTA", JOptionPane.WARNING_MESSAGE);
+            String mensagem = String.format(
+                    "⚠️ ALERTA: Estoque baixo de %s! Quantidade atual: %d",
+                    this.nome,
+                    this.quantidadeAtual
+            );
+            JOptionPane.showMessageDialog(null, mensagem, "ALERTA DE ESTOQUE", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -75,6 +80,13 @@ public class Estoque {
     }
 
     public void diminuirEstoque(int qnt) {
-        this.quantidadeAtual -= qnt;
+        if (qnt <= 0) {
+            JOptionPane.showMessageDialog(null, "Quantidade inválida!");
+            return;
+        } else if (this.quantidadeAtual >= qnt) {
+            this.quantidadeAtual -= qnt;
+        } else {
+            JOptionPane.showMessageDialog(null, "Quantidade indisponível! Disponível: " + this.quantidadeAtual);
+        }
     }
 }
