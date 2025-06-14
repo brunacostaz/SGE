@@ -147,16 +147,21 @@ public class Main {
 
                 case "4": // Dashboard (admin)
                     if (usuarioLogado.getTipoConta().equals("Administrador")) {
-                        StringBuilder dashboard = new StringBuilder();
-                        dashboard.append("📊 DASHBOARD 📊\n\n");
+                        String mensagemDashboard = "📊 DASHBOARD 📊\n\n";
+                        mensagemDashboard += "Estoque baixo:\n";
 
-                        dashboard.append("Estoque baixo:\n");
-                        if (estoqueLuva.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueLuva.getNome()).append("\n");
-                        if (estoqueMascara.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueMascara.getNome()).append("\n");
-                        if (estoqueDipirona.consultarEstoque() <= 10) dashboard.append("- ").append(estoqueDipirona.getNome()).append("\n");
+                        if (estoqueLuva.consultarEstoque() <= 10) {
+                            mensagemDashboard += "- " + estoqueLuva.getNome() + "\n";
+                        }
+                        if (estoqueMascara.consultarEstoque() <= 10) {
+                            mensagemDashboard += "- " + estoqueMascara.getNome() + "\n";
+                        }
+                        if (estoqueDipirona.consultarEstoque() <= 10) {
+                            mensagemDashboard += "- " + estoqueDipirona.getNome() + "\n";
+                        }
 
-                        dashboard.append("\nTotal de itens: 3");
-                        JOptionPane.showMessageDialog(null, dashboard.toString());
+                        mensagemDashboard += "\nTotal de itens: 3";
+                        JOptionPane.showMessageDialog(null, mensagemDashboard);
                     }
                     break;
 
