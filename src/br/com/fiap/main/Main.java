@@ -127,17 +127,20 @@ public class Main {
 
                         if (item == 1) {
                             estoqueSelecionado = estoqueLuva;
+                            estoqueSelecionado.aumentarEstoque(qnt);
                             materialSelecionado = luva;
                         } else if (item == 2) {
                             estoqueSelecionado = estoqueMascara;
+                            String motivo = JOptionPane.showInputDialog("Motivo da reposição:");
+                            estoqueSelecionado.aumentarEstoque(qnt, motivo);
                             materialSelecionado = mascara;
                         } else if (item == 3) {
                             estoqueSelecionado = estoqueDipirona;
+                            estoqueSelecionado.aumentarEstoque(qnt, 200);
                             materialSelecionado = dipirona;
                         }
 
                         if (estoqueSelecionado != null) {
-                            estoqueSelecionado.aumentarEstoque(qnt);
                             estoqueSelecionado.alertaEstoqueBaixo();
                             long idMovimentacao = usuarioLogado.reporMateriais();
 
