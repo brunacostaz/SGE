@@ -34,4 +34,9 @@ public class Administrador extends Funcionario {
             return "❌ Erro ao cadastrar preset: " + e.getMessage();
         }
     }
+
+    public long retirarMateriais() {
+        System.out.println("Administrador realizando retirada especial");
+        return System.currentTimeMillis();
+    }
 }

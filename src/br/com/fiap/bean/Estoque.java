@@ -79,6 +79,21 @@ public class Estoque {
         this.quantidadeAtual += qnt;
     }
 
+    public void aumentarEstoque(int quantidade, String motivo) {
+        this.quantidadeAtual += quantidade;
+        JOptionPane.showMessageDialog(null,
+                "Estoque aumentado em " + quantidade + " unidades. Motivo: " + motivo);
+    }
+
+    public void aumentarEstoque(int quantidade, int limiteMaximo) {
+        if ((this.quantidadeAtual + quantidade) > limiteMaximo) {
+            JOptionPane.showMessageDialog(null,
+                    "Atenção: Limite máximo de " + limiteMaximo + " unidades atingido!");
+        } else {
+            this.quantidadeAtual += quantidade;
+        }
+    }
+
     public void diminuirEstoque(int qnt) {
         if (qnt <= 0) {
             JOptionPane.showMessageDialog(null, "Quantidade inválida!");

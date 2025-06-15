@@ -93,7 +93,7 @@ public class Main {
                         }
 
                         if (sucesso) {
-                            long idMovimentacao = usuarioLogado.retirarMaterials();
+                            long idMovimentacao = usuarioLogado.retirarMateriais();
                             MovimentacaoEstoque mov = new MovimentacaoEstoque(
                                     idMovimentacao, "SAÍDA", LocalDate.now(),
                                     usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
@@ -118,9 +118,9 @@ public class Main {
                         int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
 
                         if (item == 1) {
-                            estoqueLuva.aumentarEstoque(qnt);
+                            estoqueLuva.aumentarEstoque(qnt, "Reposição padrão");
                         } else if (item == 2) {
-                            estoqueMascara.aumentarEstoque(qnt);
+                            estoqueMascara.aumentarEstoque(qnt, 100);
                         } else if (item == 3) {
                             estoqueDipirona.aumentarEstoque(qnt);
                         }
