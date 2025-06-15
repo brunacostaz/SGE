@@ -34,4 +34,22 @@ public class ItensMovimentados {
     public void setQuantidadeItem(int quantidadeItem) {
         this.quantidadeItem = quantidadeItem;
     }
+
+    public String exibirEvento(Materiais material) {
+
+        if (material == null) {
+            return "Item desconhecido";
+        }
+
+        return String.format(
+                "📦 Item Movimentado 📦\n\n" +
+                        "ID Movimentação: %d\n" +
+                        "Item: %s (ID: %d)\n" +
+                        "Quantidade: %d",
+                this.idMovimentacao,
+                material.getNome(),
+                this.idItem,
+                this.quantidadeItem
+        );
+    }
 }

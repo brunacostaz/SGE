@@ -67,42 +67,43 @@ public class Main {
 
                     try {
                         int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
-                        if (item != 1 && item != 2 && item != 3) {
-                            throw new Exception("Item inválido!");
-                        }
-
                         int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
 
-                        boolean sucesso = false;
+                        Estoque estoqueSelecionado = null;
+                        Materiais materialSelecionado = null;
+
                         if (item == 1) {
-                            if (estoqueLuva.getQuantidadeAtual() >= qnt) {
-                                estoqueLuva.diminuirEstoque(qnt);
-                                sucesso = true;
-                                estoqueLuva.alertaEstoqueBaixo();
-                            }
-                        }
-                        else if (item == 2) {
-                            if (estoqueMascara.getQuantidadeAtual() >= qnt) {
-                                estoqueMascara.diminuirEstoque(qnt);
-                                sucesso = true;
-                                estoqueMascara.alertaEstoqueBaixo();
-                            }
-                        }
-                        else if (item == 3) {
-                            if (estoqueDipirona.getQuantidadeAtual() >= qnt) {
-                                estoqueDipirona.diminuirEstoque(qnt);
-                                sucesso = true;
-                                estoqueDipirona.alertaEstoqueBaixo();
-                            }
+                            estoqueSelecionado = estoqueLuva;
+                            materialSelecionado = luva;
+                        } else if (item == 2) {
+                            estoqueSelecionado = estoqueMascara;
+                            materialSelecionado = mascara;
+                        } else if (item == 3) {
+                            estoqueSelecionado = estoqueDipirona;
+                            materialSelecionado = dipirona;
                         }
 
-                        if (sucesso) {
+                        if (estoqueSelecionado != null && estoqueSelecionado.getQuantidadeAtual() >= qnt) {
+                            estoqueSelecionado.diminuirEstoque(qnt);
+                            estoqueSelecionado.alertaEstoqueBaixo();
                             long idMovimentacao = usuarioLogado.retirarMateriais();
+
+                            // Cria e exibe o item movimentado
+                            ItensMovimentados itemMov = new ItensMovimentados(
+                                    idMovimentacao,
+                                    estoqueSelecionado.getIdItem(),
+                                    qnt
+                            );
+
+                            JOptionPane.showMessageDialog(null,
+                                    itemMov.exibirEvento(materialSelecionado));
+
                             MovimentacaoEstoque mov = new MovimentacaoEstoque(
                                     idMovimentacao, "SAÍDA", LocalDate.now(),
                                     usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
                             );
                             mov.exibirEvento();
+
                         } else {
                             JOptionPane.showMessageDialog(null, "Quantidade indisponível!");
                         }
@@ -119,26 +120,42 @@ public class Main {
 
                     try {
                         int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
-                        if (item != 1 && item != 2 && item != 3) {
-                            throw new Exception("Item inválido!");
-                        }
-
                         int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
 
+                        Estoque estoqueSelecionado = null;
+                        Materiais materialSelecionado = null;
+
                         if (item == 1) {
-                            estoqueLuva.aumentarEstoque(qnt, "Reposição padrão");
+                            estoqueSelecionado = estoqueLuva;
+                            materialSelecionado = luva;
                         } else if (item == 2) {
-                            estoqueMascara.aumentarEstoque(qnt, 100);
+                            estoqueSelecionado = estoqueMascara;
+                            materialSelecionado = mascara;
                         } else if (item == 3) {
-                            estoqueDipirona.aumentarEstoque(qnt);
+                            estoqueSelecionado = estoqueDipirona;
+                            materialSelecionado = dipirona;
                         }
 
-                        long idMovimentacao = usuarioLogado.reporMateriais();
-                        MovimentacaoEstoque mov = new MovimentacaoEstoque(
-                                idMovimentacao, "ENTRADA", LocalDate.now(),
-                                usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
-                        );
-                        mov.exibirEvento();
+                        if (estoqueSelecionado != null) {
+                            estoqueSelecionado.aumentarEstoque(qnt);
+                            estoqueSelecionado.alertaEstoqueBaixo();
+                            long idMovimentacao = usuarioLogado.reporMateriais();
+
+                            ItensMovimentados itemMov = new ItensMovimentados(
+                                    idMovimentacao,
+                                    estoqueSelecionado.getIdItem(),
+                                    qnt
+                            );
+
+                            JOptionPane.showMessageDialog(null,
+                                    itemMov.exibirEvento(materialSelecionado));
+
+                            MovimentacaoEstoque mov = new MovimentacaoEstoque(
+                                    idMovimentacao, "ENTRADA", LocalDate.now(),
+                                    usuarioLogado.getIdArea(), usuarioLogado.getIdFuncionario(), usuarioLogado.getIdLab()
+                            );
+                            mov.exibirEvento();
+                        }
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
                     }
