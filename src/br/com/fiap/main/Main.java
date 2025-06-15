@@ -67,6 +67,10 @@ public class Main {
 
                     try {
                         int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
+                        if (item != 1 && item != 2 && item != 3) {
+                            throw new Exception("Item inválido!");
+                        }
+
                         int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
 
                         boolean sucesso = false;
@@ -115,6 +119,10 @@ public class Main {
 
                     try {
                         int item = Integer.parseInt(JOptionPane.showInputDialog(lista + "\n\nNúmero do item:"));
+                        if (item != 1 && item != 2 && item != 3) {
+                            throw new Exception("Item inválido!");
+                        }
+
                         int qnt = Integer.parseInt(JOptionPane.showInputDialog("Quantidade:"));
 
                         if (item == 1) {
